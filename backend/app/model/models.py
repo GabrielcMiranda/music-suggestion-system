@@ -12,7 +12,7 @@ class User(Base):
     favorite_music_genre = Column(String)
     recommendations = relationship('Recommendation', backref='user')
 
-class Recommendation():
+class Recommendation(Base):
     __tablename__ = 'recommendation'
     id = Column(BigInteger, primary_key= True, autoincrement=True)
     user_id = Column(UUID, ForeignKey('user.id'), nullable= False)

@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from os import getenv
+from dotenv import load_dotenv
 
+load_dotenv()
 PG_URL = getenv('PG_URL')
 
 engine = create_async_engine(PG_URL)

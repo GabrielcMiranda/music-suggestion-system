@@ -4,9 +4,9 @@ from app.schemas import LoginRequest, Token
 from sqlalchemy.future import select
 from sqlalchemy import or_
 from app.models import User
-from app.core.security import bcrypt_context
+from app.core.security import bcrypt_context, oauth2_bearer
 from app.core.settings import Settings
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from jose import jwt, JWTError
 class AuthService:
 
@@ -27,4 +27,14 @@ class AuthService:
 
             return Token(access_token=token, token_type='bearer')
             
+    async def validateUserAuth(token:str = Depends(oauth2_bearer)):
+        try:
+            payload = jwt.decode(token=token, key= Settings.SECRET_KEY, algorithms=[Settings.ALGORITHM])
+            user_id = payload.get('sub')
 
+            if not user_id:
+                raise HTTPException(401, 'invalid token')
+            
+            return user_id
+        except JWTError:
+            raise HTTPException(401, 'invalid token')

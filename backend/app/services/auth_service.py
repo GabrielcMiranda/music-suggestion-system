@@ -10,7 +10,8 @@ from fastapi import HTTPException, Depends
 from jose import jwt, JWTError
 class AuthService:
 
-    async def login(self, dto:LoginRequest):
+    @staticmethod
+    async def login(dto:LoginRequest):
         async with async_session() as session:
 
             result = await session.execute(select(User).where(or_(User.username == dto.login, User.email == dto.login)))
@@ -19,7 +20,7 @@ class AuthService:
             if not user or not bcrypt_context.verify(dto.password, user.password):
                 raise HTTPException(status_code=404,detail='invalid credentials.')
             
-            return self.build_JWT(str(user.id))
+            return AuthService.build_JWT(str(user.id))
 
 
     async def register(dto:RegisterRequest):

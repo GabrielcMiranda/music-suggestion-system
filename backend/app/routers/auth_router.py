@@ -13,6 +13,7 @@ async def login(dto: LoginRequest):
     except HTTPException as error:
         raise error
     except Exception as error:
+        print(error)
         raise HTTPException(status_code=500, detail='Something went wrong. Please try again later.')
 
 @auth_router.post('/register',tags=['Auth'])

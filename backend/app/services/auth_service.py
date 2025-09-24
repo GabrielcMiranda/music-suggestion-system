@@ -4,7 +4,8 @@ from app.schemas import LoginRequest, Token
 from sqlalchemy.future import select
 from sqlalchemy import or_
 from app.models import User
-from app.core.security import bcrypt_context, SECRET_KEY, ALGORITHM
+from app.core.security import bcrypt_context
+from app.core.settings import Settings
 from fastapi import HTTPException
 from jose import jwt, JWTError
 class AuthService:
@@ -22,7 +23,7 @@ class AuthService:
             encode = {'subject':user.id}
             expires = datetime.utcnow()+ timedelta.seconds(36000)
             encode.update({'exp':expires})
-            token = jwt.encode(encode, SECRET_KEY, ALGORITHM)
+            token = jwt.encode(encode, Settings.SECRET_KEY, Settings.ALGORITHM)
 
             return Token(access_token=token, token_type='bearer')
             

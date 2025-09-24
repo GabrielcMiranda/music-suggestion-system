@@ -7,3 +7,12 @@ class LoginRequest(BaseModel):
 class Token(BaseModel):
     access_token:str
     token_type:str
+
+class RegisterRequest(BaseModel):
+    username:str
+    email:str
+    password:str
+
+class StandartOutput(BaseModel):
+    status_code:int
+    detail:str

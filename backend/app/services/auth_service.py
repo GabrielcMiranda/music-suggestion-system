@@ -10,25 +10,21 @@ from fastapi import HTTPException, Depends
 from jose import jwt, JWTError
 class AuthService:
 
-    async def login(dto:LoginRequest):
+    async def login(self, dto:LoginRequest):
         async with async_session() as session:
+
             result = await session.execute(select(User).where(or_(User.username == dto.login, User.email == dto.login)))
             user = result.scalar_one_or_none()
 
-            if not user:
-                raise HTTPException(status_code=404,detail='invalid user or password')
-            elif not bcrypt_context.verify(dto.password, user.password):
-                raise HTTPException(status_code=404,detail='invalid password')
+            if not user or not bcrypt_context.verify(dto.password, user.password):
+                raise HTTPException(status_code=404,detail='invalid credentials.')
             
-            encode = {'subject':str(user.id)}
-            expires = datetime.utcnow()+ timedelta(minutes= int(Settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-            encode.update({'exp':expires})
-            token = jwt.encode(encode, Settings.SECRET_KEY, Settings.ALGORITHM)
+            return self.build_JWT(str(user.id))
 
-            return Token(access_token=token, token_type='bearer')
-        
+
     async def register(dto:RegisterRequest):
         async with async_session() as session:
+
             result = await session.execute(select(User).where(or_(User.username == dto.username, User.email == dto.email)))
             user = result.scalars().all()
 
@@ -37,10 +33,13 @@ class AuthService:
             
             user = User(username = dto.username, email = dto.email, password = bcrypt_context.hash(dto.password))
             session.add(user)
+
             await session.commit()
 
-    def validateUserAuth(token:str = Depends(oauth2_bearer)):
+
+    def validate_user_auth(token:str = Depends(oauth2_bearer)):
         try:
+
             payload = jwt.decode(token=token, key= Settings.SECRET_KEY, algorithms=[Settings.ALGORITHM])
             user_id = payload.get('subject')
 
@@ -48,5 +47,16 @@ class AuthService:
                 raise HTTPException(401, 'invalid token')
             
             return user_id
+        
         except JWTError:
             raise HTTPException(401, 'invalid token')
+     
+        
+    def build_JWT(user_id:str):
+
+        encode = {'subject':user_id}
+        expires = datetime.utcnow()+ timedelta(minutes= int(Settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+        encode.update({'exp':expires})
+        token = jwt.encode(encode, Settings.SECRET_KEY, Settings.ALGORITHM)
+
+        return Token(access_token=token, token_type='bearer')

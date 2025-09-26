@@ -8,6 +8,7 @@ from app.core.security import bcrypt_context, oauth2_bearer
 from app.core.settings import Settings
 from fastapi import HTTPException, Depends
 from jose import jwt, JWTError
+from uuid import UUID
 class AuthService:
 
     @staticmethod
@@ -38,7 +39,7 @@ class AuthService:
             await session.commit()
 
 
-    def validate_user_auth(token:str = Depends(oauth2_bearer)):
+    def validate_user_auth(token:str = Depends(oauth2_bearer)) -> UUID:
         try:
 
             payload = jwt.decode(token=token, key= Settings.SECRET_KEY, algorithms=[Settings.ALGORITHM])
@@ -47,7 +48,7 @@ class AuthService:
             if not user_id:
                 raise HTTPException(401, 'invalid token')
             
-            return user_id
+            return UUID(user_id)
         
         except JWTError:
             raise HTTPException(401, 'invalid token')

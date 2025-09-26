@@ -16,7 +16,7 @@ class AuthService:
         async with async_session() as session:
 
             result = await session.execute(select(User).where(or_(User.username == dto.login, User.email == dto.login)))
-            user = result.scalars().all()
+            user = result.scalar_one_or_none()
 
             if not user or not bcrypt_context.verify(dto.password, user.password):
                 raise HTTPException(status_code=404,detail='invalid credentials.')

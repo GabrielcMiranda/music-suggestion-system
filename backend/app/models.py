@@ -12,6 +12,7 @@ class User(Base):
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     favorite_music_genre = Column(String)
+    profile_image_url = Column(String)
     recommendations = relationship('Recommendation', backref='user')
 
 class Recommendation(Base):

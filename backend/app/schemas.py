@@ -17,6 +17,12 @@ class ProfileResponse(BaseModel):
     username:str
     email:str
     favorite_music_genre:str
+    profile_picture:str | None = None
+
+class OtherProfileResponse(BaseModel):
+    username:str
+    favorite_music_genre:str
+    profile_picture:str | None = None
 
 class StandartOutput(BaseModel):
     status_code:int

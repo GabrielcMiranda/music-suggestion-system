@@ -1,27 +1,43 @@
 from fastapi import HTTPException
 from sqlalchemy.future import select
 from app.models import User
-from app.schemas import ProfileResponse
+from app.schemas import ProfileResponse, OtherProfileResponse
 from app.core.database.connection import async_session
 from uuid import UUID
+import logging
 
 class UserService:
 
 
-    async def get_profile(user_id: UUID):
+    async def get_profile(username:str , user_id: UUID):
         async with async_session() as session:
 
-            result = await session.execute(select(User).where(User.id == user_id))
+            username_query = await session.execute(select(User).where(User.username == username))
+            username_result = username_query.scalar_one_or_none()
 
-            user = result.scalar_one_or_none()
+            user_id_query = await session.execute(select(User).where(User.id == user_id))
 
-            if not user:
+            user_id_result = user_id_query.scalar_one_or_none()
+            if not user_id_result:
                 raise HTTPException(status_code=401, detail='Invalid credentials')
+
+            elif not username_result:
+                raise HTTPException(status_code=404, detail='User not found')
             
-            music_genre = user.favorite_music_genre
+            if username_result == user_id_result:
+                user = user_id_result
+                logging.info('usuarios iguais')
 
-            if not music_genre:
-                music_genre = 'You gotta generate at least one recommendation to verify your verify your favorite music genre'
+                if not user.favorite_music_genre:
+                    music_genre = 'You gotta generate at least one recommendation to verify your verify your favorite music genre'
 
-            return ProfileResponse(username=user.username, email=user.email, favorite_music_genre=music_genre)
+                return ProfileResponse(username=user.username, email=user.email, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
+            
+            else:
+                user = username_result
+
+                if not user.favorite_music_genre:
+                    music_genre = 'This user has not generated any recommendations yet'
+                
+                return OtherProfileResponse(username=user.username, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
 

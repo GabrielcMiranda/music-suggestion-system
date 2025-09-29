@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.services.auth_service import AuthService
 from app.schemas import Token, LoginRequest, RegisterRequest, StandartOutput
+import logging
 
 
 auth_router = APIRouter(prefix='/auth')
@@ -13,7 +14,7 @@ async def login(dto: LoginRequest):
     except HTTPException as error:
         raise error
     except Exception as error:
-        print(error)
+        logging.error(error)
         raise HTTPException(status_code=500, detail='Something went wrong. Please try again later.')
 
 @auth_router.post('/register',tags=['Auth'])
@@ -25,4 +26,5 @@ async def register(dto:RegisterRequest):
     except HTTPException as error:
         raise error
     except Exception as error:
+        logging.error(error)
         raise HTTPException(status_code=500, detail='Something went wrong. Please try again later')

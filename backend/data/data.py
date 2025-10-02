@@ -21,10 +21,10 @@ def treinar_modelo(df, features_cols, n_clusters=10, nome_col='name', artista_co
     if nome_col not in df.columns:
         raise ValueError(f"Coluna '{nome_col}' não encontrada. Colunas disponíveis: {df.columns.tolist()}")
     
-    if os.path.exists("k_means.pkl") and os.path.exists("scaler.pkl"):
+    if os.path.exists("C:/music-suggestion-system/backend/data/k_means.pkl") and os.path.exists("C:/music-suggestion-system/backend/data/scaler.pkl"):
         print("Carregando modelo existente...")
         kmeans_model = joblib.load("k_means.pkl")
-        scaler = joblib.load("scaler.pkl")
+        scaler = joblib.load("C:/music-suggestion-system/backend/data/scaler.pkl")
         
         df_musicas = df.copy()
         df_musicas['name'] = df_musicas[nome_col]
@@ -53,8 +53,8 @@ def treinar_modelo(df, features_cols, n_clusters=10, nome_col='name', artista_co
     kmeans_model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
     df_musicas['cluster'] = kmeans_model.fit_predict(scaled_features)
     
-    joblib.dump(kmeans_model, "k_means.pkl")
-    joblib.dump(scaler, "scaler.pkl")
+    joblib.dump(kmeans_model, "C:/music-suggestion-system/backend/data/k_means.pkl")
+    joblib.dump(scaler, "C:/music-suggestion-system/backend/data/scaler.pkl")
     
     print(f"Modelo treinado com {n_clusters} clusters")
     print(f"Total de músicas: {len(df_musicas)}")

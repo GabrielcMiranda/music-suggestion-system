@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from typing import List
+
 class LoginRequest(BaseModel):
     login:str
     password:str
@@ -26,3 +28,27 @@ class OtherProfileResponse(BaseModel):
 class StandartOutput(BaseModel):
     status_code:int
     detail:str
+    
+class ShareMusicRequest(BaseModel):
+    music_title:str
+    artist:str
+    genre: str
+    
+class ShareProfileRequest(BaseModel):
+    recipient_email:str
+    message:str | None = None
+    
+class UserMusic(BaseModel):
+    title: str
+    artist: str
+    genre: str | None = None
+    album: str | None = None
+
+class UserMusicHistory(BaseModel):
+    recommendation_id: int
+    musics: List[UserMusic]
+
+class UserMusicHistoryResponse(BaseModel):
+    total_recommendations: int
+    total_musics: int
+    user_musics: List[UserMusicHistory]

@@ -120,30 +120,3 @@ def recomendar_musicas(nome_musica, n_recomendacoes=10):
         print(f"{i:2d}. {musica}{artista}")
     
     return lista_recomendacoes
-
-
-
-
-df = pd.read_csv('backend/data/dataset.csv')
-
-
-print("Colunas:", df.columns.tolist())
-print("\nPrimeira linha:")
-print(df.iloc[0])
-
-
-nome_coluna = 'track_name'  
-artista_coluna = 'artist_name'  
-
-
-features = df.iloc[:, 5:14].columns.tolist()
-
-
-print("\nFeatures:", features)
-
-
-treinar_modelo(df, features, n_clusters=10, nome_col=nome_coluna, artista_col=artista_coluna)
-
-
-primeira_musica = 'In the end - linkin park'
-recomendar_musicas(primeira_musica, n_recomendacoes=10)

@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.future import select
+from sqlalchemy import update
 from app.models import User
 from app.schemas import ProfileResponse, OtherProfileResponse
 from app.core.database.connection import async_session
@@ -41,3 +42,15 @@ class UserService:
                 
                 return OtherProfileResponse(username=user.username, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
 
+    async def update_profile_picture(user_id:UUID, profile_picture_url:str):
+        async with async_session() as session:
+
+            result = await session.execute(update(User).where(User.id == user_id).values(profile_picture=profile_picture_url).returning(User.id))
+            user = result.scalar_one_or_none()
+            await session.commit()
+            
+            if not user:
+                raise HTTPException(status_code=404, detail='User not found')
+            
+            
+        

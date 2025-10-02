@@ -31,6 +31,8 @@ class UserService:
 
                 if not user.favorite_music_genre:
                     music_genre = 'You gotta generate at least one recommendation to verify your verify your favorite music genre'
+                else: 
+                    music_genre = user.favorite_music_genre
 
                 return ProfileResponse(username=user.username, email=user.email, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
             
@@ -39,6 +41,8 @@ class UserService:
 
                 if not user.favorite_music_genre:
                     music_genre = 'This user has not generated any recommendations yet'
+                else: 
+                    music_genre = user.favorite_music_genre
                 
                 return OtherProfileResponse(username=user.username, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
 

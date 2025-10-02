@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy import desc
 import asyncio
 from app.core.database.connection import async_session
+from collections import Counter
 from app.services.recommendationDA.data import recomendar_musicas
 from app.models import Recommendation, User
 from app.schemas import UserMusic, UserMusicHistory, UserMusicHistoryResponse
@@ -18,14 +19,15 @@ class UserMusicService:
             result = await session.execute(select(User).options(selectinload(User.recommendations)).where(User.id == user_id))
              
             user = result.scalar_one_or_none()
-
+            
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
 
             songs = await asyncio.to_thread(recomendar_musicas, music_input)
-
+            user.favorite_music_genre = 'Rock'
             recommendation = Recommendation(musicas=songs)
             user.recommendations.append(recommendation)
+            session.add(user)
 
             await session.commit()
             await session.refresh(recommendation)
@@ -44,6 +46,9 @@ class UserMusicService:
             
             result = await session.execute(query)
             recommendations = result.scalars().all()
+
+            if not recommendations:
+                raise HTTPException(status_code=404, detail="No recommendations found for this user.")
             
             user_musics = []
             total_musics = 0
@@ -85,6 +90,9 @@ class UserMusicService:
             query = select(Recommendation).where(Recommendation.user_id == user_id)
             result = await session.execute(query)
             recommendations = result.scalars().all()
+
+            if not recommendations:
+                raise HTTPException(status_code=404, detail="No recommendations found for this user.")
             
             all_musics = []
             
@@ -138,3 +146,34 @@ class UserMusicService:
                     musics.append(music)
             
             return musics
+    async def count_recommendations(user_id: UUID, by: str):
+        async with async_session() as session:
+            user_result = await session.execute(
+                select(User).options(selectinload(User.recommendations)).where(User.id == user_id)
+            )
+            user = user_result.scalar_one_or_none()
+
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            
+            query = select(Recommendation).where(Recommendation.user_id == user_id)
+            rec_result = await session.execute(query)
+            recommendations = rec_result.scalars().all()
+
+            if not recommendations:
+                raise HTTPException(status_code=404, detail="No recommendations found for this user.")
+
+            contador = Counter()
+
+            for rec in user.recommendations:
+                if rec.musicas:  # lista de músicas (JSON)
+                    for musica in rec.musicas:
+                        chave = None
+                        if by == "artist":
+                            chave = musica.get("artist")
+                        elif by == "music_title":
+                            chave = musica.get("title")
+                        if chave:
+                            contador[chave] += 1
+
+            return dict(contador)

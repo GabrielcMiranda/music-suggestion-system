@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
+from fastapi import HTTPException
 import warnings
 warnings.filterwarnings('ignore')
 import joblib
@@ -78,6 +79,7 @@ def recomendar_musicas(nome_musica, n_recomendacoes=10):
     
     if song_match.empty:
         print(f"Música '{nome_musica}' não encontrada no dataset.")
+        raise HTTPException(status_code=404, detail=f"Música '{nome_musica}' não encontrada no dataset.")
         return []
     
     song = song_match.iloc[0]

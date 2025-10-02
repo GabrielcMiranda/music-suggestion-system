@@ -1,10 +1,11 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import warnings
 warnings.filterwarnings('ignore')
 import joblib
+import json
 import os
 
 df_musicas = None
@@ -21,10 +22,10 @@ def treinar_modelo(df, features_cols, n_clusters=10, nome_col='name', artista_co
     if nome_col not in df.columns:
         raise ValueError(f"Coluna '{nome_col}' não encontrada. Colunas disponíveis: {df.columns.tolist()}")
     
-    if os.path.exists("backend/data/k_means.pkl") and os.path.exists("backend/data/scaler.pkl"):
+    if os.path.exists("app/services/recommendationDA/k_means.pkl") and os.path.exists("backend/data/scaler.pkl"):
         print("Carregando modelo existente...")
-        kmeans_model = joblib.load("backend/data/k_means.pkl")
-        scaler = joblib.load("backend/data/scaler.pkl")
+        kmeans_model = joblib.load("app/services/recommendationDA/k_means.pkl")
+        scaler = joblib.load("app/services/recommendationDA/scaler.pkl")
         
         df_musicas = df.copy()
         df_musicas['name'] = df_musicas[nome_col]
@@ -53,14 +54,16 @@ def treinar_modelo(df, features_cols, n_clusters=10, nome_col='name', artista_co
     kmeans_model = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
     df_musicas['cluster'] = kmeans_model.fit_predict(scaled_features)
     
-    joblib.dump(kmeans_model, "backend/data/k_means.pkl")
-    joblib.dump(scaler, "backend/data/scaler.pkl")
+    joblib.dump(kmeans_model, "app/services/recommendationDA/k_means.pkl")
+    joblib.dump(scaler, "app/services/recommendationDA/scaler.pkl")
     
     print(f"Modelo treinado com {n_clusters} clusters")
     print(f"Total de músicas: {len(df_musicas)}")
 
 
 def recomendar_musicas(nome_musica, n_recomendacoes=10):
+    df = pd.read_csv('app/services/recommendationDA/dataset.csv')
+    treinar_modelo(df=df, features_cols=df.iloc[:, 5:14].columns.tolist(), nome_col='track_name', artista_col='artists')
     global df_musicas, kmeans_model, scaler, scaled_features
     
     if df_musicas is None or kmeans_model is None:
@@ -107,16 +110,12 @@ def recomendar_musicas(nome_musica, n_recomendacoes=10):
     cluster_songs = cluster_songs[cluster_songs['distance'] > 0]
     
     recommendations = cluster_songs.nsmallest(n_recomendacoes, 'distance')
-    lista_recomendacoes = recommendations['name'].tolist()
-    
-    print(f"{'='*60}")
-    print(f"Top {len(lista_recomendacoes)} Recomendações:")
-    print(f"{'='*60}\n")
-    
-    for i, musica in enumerate(lista_recomendacoes, 1):
-        artista = ""
-        if 'artists' in recommendations.columns:
-            artista = f" - {recommendations.iloc[i-1]['artists']}"
-        print(f"{i:2d}. {musica}{artista}")
-    
-    return lista_recomendacoes
+    music_list = []
+    for _, row in recommendations.iterrows():
+        music_list.append({
+            "title": row.get("name", ""),
+            "artist": row.get("artists", ""),
+            "genre": row.get("genre", ""),
+            "album": row.get("album", "")
+        })
+    return music_list

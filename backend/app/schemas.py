@@ -52,3 +52,6 @@ class UserMusicHistoryResponse(BaseModel):
     total_recommendations: int
     total_musics: int
     user_musics: List[UserMusicHistory]
+
+class RecommendationRequest(BaseModel):
+    music_input: str

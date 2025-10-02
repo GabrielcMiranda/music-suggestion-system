@@ -13,3 +13,4 @@ async def create_database():
 if __name__ == '__main__':
     run(create_database())
     logging.info("Database initialized!")
+    print('Database initialized!')

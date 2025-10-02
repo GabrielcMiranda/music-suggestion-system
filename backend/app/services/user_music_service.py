@@ -1,13 +1,35 @@
 from typing import List
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy import desc
+import asyncio
 from app.core.database.connection import async_session
-from app.models import Recommendation
+from app.services.recommendationDA.data import recomendar_musicas
+from app.models import Recommendation, User
 from app.schemas import UserMusic, UserMusicHistory, UserMusicHistoryResponse
 from fastapi import HTTPException
 from uuid import UUID
 
 class UserMusicService:
+
+    @staticmethod
+    async def make_recommendation(user_id: UUID, music_input:str):
+        async with async_session() as session:
+            result = await session.execute(select(User).options(selectinload(User.recommendations)).where(User.id == user_id))
+             
+            user = result.scalar_one_or_none()
+
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+
+            songs = await asyncio.to_thread(recomendar_musicas, music_input)
+
+            recommendation = Recommendation(musicas=songs)
+            user.recommendations.append(recommendation)
+
+            await session.commit()
+            await session.refresh(recommendation)
+
     
     @staticmethod
     async def get_user_musics(user_id: UUID) -> UserMusicHistoryResponse:

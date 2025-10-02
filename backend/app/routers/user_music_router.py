@@ -1,11 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.schemas import UserMusicHistoryResponse, UserMusic
+from app.schemas import UserMusicHistoryResponse, UserMusic, StandartOutput, RecommendationRequest
 from app.services.auth_service import AuthService
 from app.services.user_music_service import UserMusicService
+import logging
 from typing import List
+from fastapi import Body
 from uuid import UUID
 
 user_music_router = APIRouter(prefix='/my-musics', tags=['User Musics'])
+
+@user_music_router.post('/recommend', response_model=StandartOutput)
+async def recommend_music(dto:RecommendationRequest , user_id: UUID = Depends(AuthService.validate_user_auth)):
+    try:
+        await UserMusicService.make_recommendation(user_id, dto.music_input)
+        return StandartOutput(status_code=200, detail='Music recommendation generated successfully.')
+    except HTTPException as error:
+        raise error
+    except Exception as error:
+        logging.error("Error in recommend_music: %s", error)
+        raise HTTPException(status_code=500, detail='Something went wrong. Please try again later.')
 
 @user_music_router.get('/', response_model=UserMusicHistoryResponse)
 async def get_my_musics(

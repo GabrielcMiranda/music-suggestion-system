@@ -34,5 +34,33 @@ export class AuthService {
   removeToken() {
     return localStorage.removeItem('access_token');
   }
+
+  isTokenValid(): boolean {
+    const token = this.getToken();
+    
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      
+      const expirationTime = payload.exp * 1000;
+      const currentTime = Date.now();
+      
+      if (currentTime >= expirationTime) {
+        this.removeToken();
+        return false;
+      }
+      
+      return true;
+      
+    } catch (error) {
+    
+      console.error('Token inválido:', error);
+      this.removeToken();
+      return false;
+    }
+  }
   
 }

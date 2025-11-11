@@ -1,13 +1,26 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth/login',
+    redirectTo: 'music/recommendation',
     pathMatch: 'full'
   },
   {
-    path: 'auth',
-    loadChildren: () => import('./modules/auth/auth-routing-module').then(m => m.AuthRoutingModule)
+    path: 'auth/login',
+    loadComponent: () => import('./modules/auth/pages/login/login').then(m => m.Login),
+    canActivate: [guestGuard]  
+  },
+  {
+    path: 'auth/register',
+    loadComponent: () => import('./modules/auth/pages/register/register').then(m => m.Register),
+    canActivate: [guestGuard]  
+  },
+  {
+    path: 'music/recommendation',
+    loadComponent: () => import('./modules/music/pages/recommendation/recommendation').then(m => m.Recommendation),
+    canActivate: [authGuard]  
   }
 ];

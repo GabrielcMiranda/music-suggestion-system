@@ -32,7 +32,19 @@ class UserMusicService:
             await session.commit()
             await session.refresh(recommendation)
 
-    
+            musics = []
+            for song in songs:
+                if isinstance(song, dict):
+                    music = UserMusic(
+                        title=song.get('title', 'Título não informado'),
+                        artist=song.get('artist', 'Artista não informado'),
+                        genre=song.get('genre', 'Gênero não informado'),
+                        album=song.get('album', 'Álbum não informado'),
+                    )
+                    musics.append(music)
+
+            return musics
+
     @staticmethod
     async def get_user_musics(user_id: UUID) -> UserMusicHistoryResponse:
         # retorna todas as músicas recomendadas para o usuário

@@ -55,3 +55,6 @@ class UserMusicHistoryResponse(BaseModel):
 
 class RecommendationRequest(BaseModel):
     music_input: str
+
+class RecommendationResponse(BaseModel):
+    recommendations: List[UserMusic]

@@ -49,7 +49,7 @@ export class Register {
     this.authService.register(registerData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/music/recommendation']);
       },
       error: (error) => {
         this.isLoading = false;

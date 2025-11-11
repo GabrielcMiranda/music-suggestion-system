@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.schemas import UserMusicHistoryResponse, UserMusic, StandartOutput, RecommendationRequest
+from app.schemas import UserMusicHistoryResponse, UserMusic, StandartOutput, RecommendationRequest, RecommendationResponse
 from app.services.auth_service import AuthService
 from app.services.user_music_service import UserMusicService
 import logging
@@ -9,11 +9,11 @@ from uuid import UUID
 
 user_music_router = APIRouter(prefix='/my-musics', tags=['User Musics'])
 
-@user_music_router.post('/recommend', response_model=StandartOutput)
+@user_music_router.post('/recommend', response_model=RecommendationResponse)
 async def recommend_music(dto:RecommendationRequest , user_id: UUID = Depends(AuthService.validate_user_auth)):
     try:
-        await UserMusicService.make_recommendation(user_id, dto.music_input)
-        return StandartOutput(status_code=200, detail='Music recommendation generated successfully.')
+        recommendations = await UserMusicService.make_recommendation(user_id, dto.music_input)
+        return RecommendationResponse(recommendations=recommendations)
     except HTTPException as error:
         raise error
     except Exception as error:

@@ -30,5 +30,9 @@ export class AuthService {
   getToken(){
     return localStorage.getItem(this.tokenKey);
   }
+
+  removeToken() {
+    return localStorage.removeItem('access_token');
+  }
   
 }

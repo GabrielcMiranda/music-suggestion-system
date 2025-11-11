@@ -1,0 +1,176 @@
+<div class="flex h-screen bg-gray-900">
+  
+  <!-- sidebar -->
+  <div class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
+    <!-- header -->
+    <div class="p-6 border-b border-gray-700">
+      <h1 class="text-2xl font-bold text-white">Rhythmate</h1>
+      <p class="text-gray-400 text-sm">Music Discovery</p>
+    </div>
+
+    <!-- menu de navegação -->
+    <nav class="flex-1 p-4 space-y-2">
+      <!-- perfil -->
+      <a routerLink="/profile" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+        <span>Perfil</span>
+      </a>
+
+      <!-- recomendação (ativo) -->
+      <a routerLink="/music/recommendation" class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-600 to-red-600 text-white rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+        </svg>
+        <span>Recomendação</span>
+      </a>
+
+      <!-- histórico -->
+      <a routerLink="/history" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>Histórico</span>
+      </a>
+
+      <!-- dashboard -->
+      <a routerLink="/dashboard" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span>Dashboard</span>
+      </a>
+    </nav>
+
+    <!-- Botão de logout -->
+    <div class="p-4 border-t border-gray-700">
+      <button (click)="logout()" class="flex items-center gap-3 px-4 py-3 w-full text-gray-300 hover:bg-red-900/30 hover:text-red-400 rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- recomendacao -->
+  <div class="flex-1 overflow-auto">
+
+      <!-- gradiente com glass effect-->
+    <div class="h-[20vh] bg-black relative overflow-hidden border-b border-gray-700">
+        <!-- Camada 1: diagonal superior esquerda pra inferior direita-->
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-900/70 via-transparent to-transparent"></div>
+        
+        <!-- Camada 2: diagonal inferior esquerda pra superior direita -->
+        <div class="absolute inset-0 bg-gradient-to-tr from-red-900/60 via-transparent to-purple-800/40"></div>
+        
+        <!-- Camada 3: radial centro pra fora-->
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-purple-950/50 to-red-950/70"></div>
+        
+        <!-- glass effect-->
+        <div class="absolute inset-0 backdrop-blur-sm bg-black/20">
+            <div class="w-full h-full flex items-center justify-center text-white/50">  
+            </div>
+        </div>
+    </div>
+
+    <div class="p-8 max-w-4xl mx-auto">
+      
+      <!-- header -->
+      <div class="mb-8 text-center">
+        <h2 class="text-3xl font-bold text-white mb-2">Descubra Novas Músicas</h2>
+        <p class="text-gray-400">Digite o nome de uma música que você gosta e receba recomendações personalizadas</p>
+      </div>
+
+      <!-- form -->
+      <div class="bg-gray-800 rounded-lg p-6 mb-6">
+        <form (ngSubmit)="onSubmit()" class="space-y-4">
+          <!-- campo de input -->
+          <div>
+            <label for="musicInput" class="block text-sm font-medium text-gray-300 mb-2">
+              Nome da Música
+            </label>
+            <input
+              id="musicInput"
+              type="text"
+              [(ngModel)]="musicInput"
+              name="musicInput"
+              required
+              class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+              placeholder="Ex: Bohemian Rhapsody"
+            />
+          </div>
+
+          <!-- erro -->
+          <div *ngIf="errorMessage" class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
+            {{ errorMessage }}
+          </div>
+
+          <!-- submit -->
+          <button
+            type="submit"
+            [disabled]="isLoading"
+            class="w-full bg-gradient-to-r from-purple-600 to-red-600 text-white font-semibold py-3 px-4 rounded-lg hover:from-purple-700 hover:to-red-700 transition duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            <span *ngIf="!isLoading">Buscar Recomendações</span>
+            <span *ngIf="isLoading" class="flex items-center justify-center">
+              <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Buscando...
+            </span>
+          </button>
+        </form>
+      </div>
+
+      <!-- resultados -->
+      <div *ngIf="recommendations.length > 0" class="bg-gray-800 rounded-lg p-6">
+        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+          </svg>
+          Músicas Recomendadas
+        </h3>
+
+        <!-- músicas -->
+        <div class="space-y-3">
+          <div 
+            *ngFor="let music of recommendations; let i = index" 
+            class="flex items-center gap-4 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition"
+          >
+            <!-- número -->
+            <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-purple-600 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+              {{ i + 1 }}
+            </div>
+
+            <!-- info musica -->
+            <div class="flex-1 min-w-0">
+              <h4 class="text-white font-semibold truncate">{{ music.title }}</h4>
+              <p class="text-gray-400 text-sm truncate">{{ music.artist }}</p>
+            </div>
+
+            <!-- gênero e album -->
+            <div class="hidden md:flex flex-col items-end">
+              <span class="text-purple-400 text-sm">{{ music.genre }}</span>
+              <span class="text-gray-500 text-xs truncate max-w-[150px]">{{ music.album }}</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- sem resultados -->
+      <div *ngIf="!isLoading && recommendations.length === 0 && hasSearched" class="bg-gray-800 rounded-lg p-8 text-center">
+        <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+        </svg>
+        <h3 class="text-xl font-semibold text-gray-400 mb-2">Nenhuma recomendação encontrada</h3>
+        <p class="text-gray-500">Tente buscar por outra música</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>

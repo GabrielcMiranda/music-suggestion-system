@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
@@ -41,7 +41,7 @@ export class Login {
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage = 'Login ou senha incorretos';
+        this.errorMessage = error.error?.detail || 'Login ou senha incorretos';
         console.error('Erro no login:', error);
       }
     });

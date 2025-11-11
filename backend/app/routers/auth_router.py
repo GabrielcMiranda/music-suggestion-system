@@ -21,8 +21,7 @@ async def login(dto: LoginRequest):
 async def register(dto:RegisterRequest):
 
     try:
-        await AuthService.register(dto)
-        return StandartOutput(status_code=200, detail='User created sucessfully.')
+        return await AuthService.register(dto)
     except HTTPException as error:
         raise error
     except Exception as error:

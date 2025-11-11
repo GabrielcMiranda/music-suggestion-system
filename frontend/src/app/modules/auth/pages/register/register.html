@@ -1,0 +1,135 @@
+<div class="flex h-screen">
+
+   <!-- tela formulario-->
+  <div class="w-2/5 bg-gray-900 flex items-center justify-center p-8">
+    <div class="w-full max-w-md">
+      
+      <!-- header -->
+      <h1 class="text-5xl font-bold text-white mb-2 text-center">
+        Rhythmate
+      </h1>
+      <p class="text-gray-400 text-center mb-8">
+        Sinta a música do seu jeito.
+      </p>
+
+      <!-- form -->
+      <form (ngSubmit)="onSubmit()" class="space-y-6">
+
+        <!-- campo de username -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+            Username
+          </label>
+          <input
+            id="username"
+            type="text"
+            [(ngModel)]="registerRequest.username"
+            name="username"
+            required
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+            placeholder="Digite seu username"
+          />
+        </div>
+
+        <!-- campo de email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            [(ngModel)]="registerRequest.email"
+            name="email"
+            required
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+            placeholder="Digite seu email"
+          />
+        </div>
+
+        <!-- campo de senha -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+            Senha
+          </label>
+          <input
+            id="password"
+            type="password"
+            [(ngModel)]="registerRequest.password"
+            name="password"
+            required
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+            placeholder="Digite sua senha"
+          />
+        </div>
+        <!-- campo de confirmar senha -->
+        <div>
+          <label for="matchPassword" class="block text-sm font-medium text-gray-300 mb-2">
+            Confirmar Senha
+          </label>
+          <input
+            id="matchPassword"
+            type="password"
+            [(ngModel)]="registerRequest.matchPassword"
+            name="matchPassword"
+            required
+            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+            placeholder="Confirme sua senha"
+          />
+        </div>
+
+        <!-- mensagem de erro -->
+        <div *ngIf="errorMessage" class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
+          {{ errorMessage }}
+        </div>
+
+        <!-- botao submit -->
+        <button
+          type="submit"
+          [disabled]="isLoading"
+          class="w-full bg-gradient-to-r from-purple-600 to-red-600 text-white font-semibold py-3 px-4 rounded-lg hover:from-purple-700 hover:to-red-700 transition duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+        >
+          <span *ngIf="!isLoading">Entrar</span>
+          <span *ngIf="isLoading" class="flex items-center justify-center">
+            <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Carregando...
+          </span>
+        </button>
+      </form>
+
+      <!-- link registro -->
+      <div class="mt-6 text-center">
+        <p class="text-gray-400 text-sm">
+          Já tem uma conta? 
+          <a routerLink="/auth/login" class="text-purple-400 font-semibold hover:text-purple-300 transition">
+            Entrar aqui
+          </a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+  
+  <!-- gradiente com glass effect-->
+  <div class="w-3/5 bg-black relative overflow-hidden">
+    <!-- Camada 1: diagonal superior esquerda pra inferior direita-->
+    <div class="absolute inset-0 bg-gradient-to-br from-purple-900/70 via-transparent to-transparent"></div>
+    
+    <!-- Camada 2: diagonal inferior esquerda pra superior direita -->
+    <div class="absolute inset-0 bg-gradient-to-tr from-red-900/60 via-transparent to-purple-800/40"></div>
+    
+    <!-- Camada 3: radial centro pra fora-->
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-purple-950/50 to-red-950/70"></div>
+    
+    <!-- glass effect-->
+    <div class="absolute inset-0 backdrop-blur-sm bg-black/20">
+      <div class="w-full h-full flex items-center justify-center text-white/50">
+        
+      </div>
+    </div>
+  </div>
+
+</div>

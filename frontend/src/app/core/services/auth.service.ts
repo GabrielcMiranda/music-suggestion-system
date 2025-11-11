@@ -19,6 +19,14 @@ export class AuthService {
     );
   }
 
+  register(registerData: {username:string, email:string, password:string}){
+    return this.api.post<{access_token:string, token_type:string}>('auth/register', registerData).pipe(
+      tap(response => {
+        localStorage.setItem(this.tokenKey, response.access_token);
+      })
+    );
+  }
+
   getToken(){
     return localStorage.getItem(this.tokenKey);
   }

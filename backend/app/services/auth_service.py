@@ -28,15 +28,19 @@ class AuthService:
         async with async_session() as session:
 
             result = await session.execute(select(User).where(or_(User.username == dto.username, User.email == dto.email)))
-            user = result.scalars().all()
+            existing_user = result.scalar_one_or_none()
 
-            if user:
-                raise HTTPException(status_code=409,detail='username or email are already been used')
+            if existing_user:
+                raise HTTPException(status_code=409, detail='username or email are already been used')
             
-            user = User(username = dto.username, email = dto.email, password = bcrypt_context.hash(dto.password))
+            user = User(username=dto.username, email=dto.email, password=bcrypt_context.hash(dto.password))
             session.add(user)
 
             await session.commit()
+            
+            await session.refresh(user)
+
+            return AuthService.build_JWT(str(user.id))
 
 
     def validate_user_auth(token:str = Depends(oauth2_bearer)) -> UUID:

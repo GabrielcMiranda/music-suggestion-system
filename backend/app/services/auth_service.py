@@ -21,7 +21,7 @@ class AuthService:
             if not user or not bcrypt_context.verify(dto.password, user.password):
                 raise HTTPException(status_code=404,detail='invalid credentials.')
             
-            return AuthService.build_JWT(str(user.id))
+            return AuthService.build_JWT(str(user.id), user.username)
 
 
     async def register(dto:RegisterRequest):
@@ -40,7 +40,7 @@ class AuthService:
             
             await session.refresh(user)
 
-            return AuthService.build_JWT(str(user.id))
+            return AuthService.build_JWT(str(user.id), user.username)
 
 
     def validate_user_auth(token:str = Depends(oauth2_bearer)) -> UUID:
@@ -58,9 +58,12 @@ class AuthService:
             raise HTTPException(401, 'invalid token')
      
         
-    def build_JWT(user_id:str):
+    def build_JWT(user_id:str, username:str):
 
-        encode = {'subject':user_id}
+        encode = {
+            'subject': user_id,
+            'username': username
+        }
         expires = datetime.utcnow()+ timedelta(minutes= int(Settings.ACCESS_TOKEN_EXPIRE_MINUTES))
         encode.update({'exp':expires})
         token = jwt.encode(encode, Settings.SECRET_KEY, Settings.ALGORITHM)

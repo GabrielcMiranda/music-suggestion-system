@@ -19,4 +19,8 @@ export class ApiService {
   post<T>(endpoint:string, body:any){
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, body)
   }
+
+  patch<T>(endpoint:string, body:any){
+    return this.http.patch<T>(`${this.baseUrl}/${endpoint}`, body)
+  }
 }

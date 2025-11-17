@@ -46,11 +46,10 @@ class UserMusic(BaseModel):
 
 class UserMusicHistory(BaseModel):
     recommendation_id: int
+    song_input: str
     musics: List[UserMusic]
 
 class UserMusicHistoryResponse(BaseModel):
-    total_recommendations: int
-    total_musics: int
     user_musics: List[UserMusicHistory]
 
 class RecommendationRequest(BaseModel):

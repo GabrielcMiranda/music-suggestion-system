@@ -6,6 +6,7 @@ from app.schemas import ProfileResponse, OtherProfileResponse
 from app.core.database.connection import async_session
 from uuid import UUID
 import logging
+from app.services.user_music_service import UserMusicService
 
 class UserService:
 
@@ -29,20 +30,18 @@ class UserService:
                 user = user_id_result
                 logging.info('usuarios iguais')
 
-                if not user.favorite_music_genre:
-                    music_genre = 'You gotta generate at least one recommendation to verify your verify your favorite music genre'
-                else: 
-                    music_genre = user.favorite_music_genre
+                music_genre = await UserMusicService.get_favorite_genre(user_id)
+                if not music_genre:
+                    music_genre = 'You gotta generate at least one recommendation to verify your favorite music genre'
 
                 return ProfileResponse(username=user.username, email=user.email, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
             
             else:
                 user = username_result
 
-                if not user.favorite_music_genre:
+                music_genre = await UserMusicService.get_favorite_genre(user.id)
+                if not music_genre:
                     music_genre = 'This user has not generated any recommendations yet'
-                else: 
-                    music_genre = user.favorite_music_genre
                 
                 return OtherProfileResponse(username=user.username, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
 

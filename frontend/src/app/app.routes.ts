@@ -27,5 +27,10 @@ export const routes: Routes = [
     path: 'user/profile',
     loadComponent: () => import('./modules/user/pages/profile/profile').then(m => m.Profile),
     canActivate: [authGuard]
+  },
+  {
+    path: 'music/history',
+    loadComponent: () => import('./modules/music/pages/history/history').then(m => m.History),
+    canActivate: [authGuard]
   }
 ];

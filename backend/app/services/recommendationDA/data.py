@@ -117,7 +117,7 @@ def recomendar_musicas(nome_musica, n_recomendacoes=10):
         music_list.append({
             "title": row.get("name", ""),
             "artist": row.get("artists", ""),
-            "genre": row.get("genre", ""),
-            "album": row.get("album", "")
+            "genre": row.get("track_genre", ""), 
+            "album": row.get("album_name", "")  
         })
     return music_list

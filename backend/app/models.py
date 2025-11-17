@@ -20,4 +20,5 @@ class Recommendation(Base):
     id = Column(BigInteger, primary_key= True, autoincrement=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=False)
     user = relationship('User', back_populates='recommendations')
+    song_input = Column(String, nullable=False)
     musicas = Column(JSON, nullable=False)

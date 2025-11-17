@@ -24,8 +24,7 @@ class UserMusicService:
                 raise HTTPException(status_code=404, detail="User not found")
 
             songs = await asyncio.to_thread(recomendar_musicas, music_input)
-            user.favorite_music_genre = 'Rock'
-            recommendation = Recommendation(musicas=songs)
+            recommendation = Recommendation(musicas=songs, song_input=music_input)
             user.recommendations.append(recommendation)
             session.add(user)
 
@@ -83,14 +82,12 @@ class UserMusicService:
                 if musics:  # Só adiciona se tiver músicas
                     user_music_history = UserMusicHistory(
                         recommendation_id=recommendation.id,
+                        song_input=recommendation.song_input,
                         musics=musics
                     )
                     user_musics.append(user_music_history)
-                    total_musics += len(musics)
             
             return UserMusicHistoryResponse(
-                total_recommendations=len(user_musics),
-                total_musics=total_musics,
                 user_musics=user_musics
             )
     
@@ -189,3 +186,28 @@ class UserMusicService:
                             contador[chave] += 1
 
             return dict(contador)
+    
+    @staticmethod
+    async def get_favorite_genre(user_id: UUID) -> str:
+        """Calcula o gênero musical mais frequente nas recomendações do usuário"""
+        async with async_session() as session:
+            query = select(Recommendation).where(Recommendation.user_id == user_id)
+            result = await session.execute(query)
+            recommendations = result.scalars().all()
+
+            if not recommendations:
+                return None 
+            
+            genre_counter = Counter()
+
+            for rec in recommendations:
+                if rec.musicas:  
+                    for musica in rec.musicas:
+                        genre = musica.get("genre")
+                        if genre:
+                            genre_counter[genre] += 1
+            
+            if not genre_counter:
+                return None  
+            
+            return genre_counter.most_common(1)[0][0]

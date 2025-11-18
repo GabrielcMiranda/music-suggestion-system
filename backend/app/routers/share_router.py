@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.schemas import ShareMusicRequest, ShareProfileRequest, StandartOutput 
+from app.schemas import ShareProfileRequest, StandartOutput, UserMusic 
 from app.services.auth_service import AuthService
 from app.services.share_service import ShareService
 from app.core.database.connection import async_session
@@ -11,7 +11,7 @@ share_router = APIRouter(prefix='/share', tags=['Share'])
 
 @share_router.post('/song', response_model=StandartOutput)
 async def share_music_email(
-    share_request: ShareMusicRequest,
+    share_request: UserMusic,
     recipient_email: str,
     current_user_id: UUID = Depends(AuthService.validate_user_auth)
 ):  

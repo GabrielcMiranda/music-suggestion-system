@@ -29,11 +29,6 @@ class StandartOutput(BaseModel):
     status_code:int
     detail:str
     
-class ShareMusicRequest(BaseModel):
-    music_title:str
-    artist:str
-    genre: str
-    
 class ShareProfileRequest(BaseModel):
     recipient_email:str
     message:str | None = None

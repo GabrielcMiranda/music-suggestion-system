@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MusicRecommendation } from '../recommendation/recommendation';
 import { MusicService } from '../../../../core/services/music.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ShareService } from '../../../../core/services/share.service';
 
 export interface recommendationHistory {
   recommendationId : number;
@@ -14,7 +16,7 @@ export interface recommendationHistory {
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './history.html',
   styleUrl: './history.scss'
 })
@@ -24,11 +26,18 @@ export class History implements OnInit {
   isLoading = false;
   errorMessage = '';
   expandedRecommendations: Set<number> = new Set();
+  
+  sharingMusic: MusicRecommendation | null = null;
+  shareEmail = '';
+  isSharing = false;
+  shareErrorMessage = '';
+  shareSuccessMessage = '';
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private musicService: MusicService
+    private musicService: MusicService,
+    private shareService: ShareService
   ) {}
 
   ngOnInit(): void {
@@ -73,5 +82,55 @@ export class History implements OnInit {
   logout(): void {
     this.authService.removeToken();
     this.router.navigate(['/auth/login']);
+  }
+  
+  openShareModal(music: MusicRecommendation): void {
+    this.sharingMusic = music;
+    this.shareEmail = '';
+    this.shareErrorMessage = '';
+    this.shareSuccessMessage = '';
+  }
+  
+  closeShareModal(): void {
+    this.sharingMusic = null;
+    this.shareEmail = '';
+    this.shareErrorMessage = '';
+    this.shareSuccessMessage = '';
+  }
+  
+  shareMusic(): void {
+    if (!this.shareEmail.trim()) {
+      this.shareErrorMessage = 'Por favor, insira um email';
+      return;
+    }
+    
+    if (!this.sharingMusic) {
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.shareEmail)) {
+      this.shareErrorMessage = 'Por favor, insira um email válido';
+      return;
+    }
+    
+    this.isSharing = true;
+    this.shareErrorMessage = '';
+    this.shareSuccessMessage = '';
+    
+    this.shareService.shareSong(this.sharingMusic, this.shareEmail).subscribe({
+      next: () => {
+        this.shareSuccessMessage = 'Música compartilhada com sucesso!';
+        this.isSharing = false;
+        
+        setTimeout(() => {
+          this.closeShareModal();
+        }, 2000);
+      },
+      error: (error) => {
+        this.shareErrorMessage = error.error?.detail || 'Erro ao compartilhar música';
+        this.isSharing = false;
+      }
+    });
   }
 }

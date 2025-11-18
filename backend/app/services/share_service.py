@@ -4,7 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from app.core.settings import Settings
-from app.schemas import ShareMusicRequest, ShareProfileRequest, StandartOutput
+from app.schemas import ShareProfileRequest, StandartOutput, UserMusic
 from fastapi import HTTPException
 import logging
 
@@ -12,7 +12,7 @@ class ShareService:
     
     # UseCase para compartilhar música por email
     @staticmethod
-    async def share_music_by_email(dto: ShareMusicRequest, sender_username: str, recipient_email: str) -> StandartOutput:
+    async def share_music_by_email(dto: UserMusic, sender_username: str, recipient_email: str) -> StandartOutput:
         
         try:
             # carregar configs email .env
@@ -53,9 +53,10 @@ class ShareService:
                         <p><strong>{sender_username}</strong> compartilhou uma música incrível com você:</p>
                         
                         <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                            <h2 style="color: #333; margin-top: 0;">🎵 {dto.music_title}</h2>
+                            <h2 style="color: #333; margin-top: 0;">🎵 {dto.title}</h2>
                             <p style="color: #666; font-size: 16px;"><strong>Artista:</strong> {dto.artist}</p>
                             <p style="color: #666; font-size: 16px;"><strong>Gênero:</strong> {dto.genre}</p>
+                            <p style="color: #666; font-size: 16px;"><strong>Álbum:</strong> {dto.album}</p>
                         </div>
                         
                         <div style="text-align: center; margin: 30px 0;">
@@ -81,11 +82,11 @@ class ShareService:
                 server.send_message(msg)
                 print("Email enviado com sucesso")
             
-            logging.info(f"Música '{dto.music_title}' compartilhada por email de {sender_username} para {recipient_email}")
+            logging.info(f"Música '{dto.title}' compartilhada por email de {sender_username} para {recipient_email}")
             
             return StandartOutput(
                 status_code=200,
-                detail=f"Música '{dto.music_title}' compartilhada por email com sucesso!"
+                detail=f"Música '{dto.title}' compartilhada por email com sucesso!"
             )
         
         # exceções especificas para identificar o bendito erro  

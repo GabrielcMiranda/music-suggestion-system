@@ -19,4 +19,8 @@ export class MusicService {
   getMusicHistory(){
     return this.api.get<recommendationHistory[]>('my-musics');
   }
+
+  getMusicStats(filter_by: string){
+    return this.api.get<{ total_recommendations: number, most_requested_genre: string }>(`my-musics/stats?by=${filter_by}`);
+  }
 }

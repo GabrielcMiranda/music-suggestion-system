@@ -52,3 +52,8 @@ class RecommendationRequest(BaseModel):
 
 class RecommendationResponse(BaseModel):
     recommendations: List[UserMusic]
+
+class MusicStatsResponse(BaseModel):
+    total_recommendations: int
+    stats: dict
+    top_musics: list

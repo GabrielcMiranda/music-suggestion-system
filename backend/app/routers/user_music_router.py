@@ -4,7 +4,7 @@ from app.services.auth_service import AuthService
 from app.services.user_music_service import UserMusicService
 import logging
 from typing import List
-from fastapi import Body, Query
+from fastapi import Query
 from uuid import UUID
 
 user_music_router = APIRouter(prefix='/my-musics', tags=['User Musics'])
@@ -56,7 +56,7 @@ async def get_musics_from_recommendation(
 @user_music_router.get("/stats")
 async def count_recommendations(
     user_id: UUID = Depends(AuthService.validate_user_auth),
-    by: str = Query("artist", regex="^(artist|music_title)$")
+    by: str = Query("artist", regex="^(artist|genre)$")
 ):
     try:
         return await UserMusicService.count_recommendations(user_id, by)

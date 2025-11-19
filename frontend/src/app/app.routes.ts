@@ -32,5 +32,10 @@ export const routes: Routes = [
     path: 'music/history',
     loadComponent: () => import('./modules/music/pages/history/history').then(m => m.History),
     canActivate: [authGuard]
+  },
+  {
+    path: 'music/dashboard',
+    loadComponent: () => import('./modules/music/pages/dashboard/dashboard').then(m => m.Dashboard),
+    canActivate: [authGuard]
   }
 ];

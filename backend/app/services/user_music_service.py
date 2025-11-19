@@ -7,7 +7,7 @@ from app.core.database.connection import async_session
 from collections import Counter
 from app.services.recommendationDA.data import recomendar_musicas
 from app.models import Recommendation, User
-from app.schemas import UserMusic, UserMusicHistory, UserMusicHistoryResponse
+from app.schemas import UserMusic, UserMusicHistory, UserMusicHistoryResponse, MusicStatsResponse
 from fastapi import HTTPException
 from uuid import UUID
 
@@ -173,19 +173,49 @@ class UserMusicService:
                 raise HTTPException(status_code=404, detail="No recommendations found for this user.")
 
             contador = Counter()
+            music_counter = Counter()  
 
             for rec in user.recommendations:
-                if rec.musicas:  # lista de músicas (JSON)
+                if rec.musicas: 
                     for musica in rec.musicas:
                         chave = None
                         if by == "artist":
                             chave = musica.get("artist")
-                        elif by == "music_title":
-                            chave = musica.get("title")
+                        elif by == "genre":
+                            chave = musica.get("genre")
                         if chave:
                             contador[chave] += 1
+                        
+                        music_key = f"{musica.get('title')}||{musica.get('artist')}"
+                        music_counter[music_key] += 1
 
-            return dict(contador)
+            top_items = dict(contador.most_common(10))
+            
+            top_3_music_keys = music_counter.most_common(3)
+            top_3_musics = []
+            
+            for music_key, count in top_3_music_keys:
+                title, artist = music_key.split('||')
+                for rec in user.recommendations:
+                    if rec.musicas:
+                        for musica in rec.musicas:
+                            if musica.get('title') == title and musica.get('artist') == artist:
+                                top_3_musics.append({
+                                    'title': musica.get('title'),
+                                    'artist': musica.get('artist'),
+                                    'genre': musica.get('genre'),
+                                    'album': musica.get('album'),
+                                    'count': count
+                                })
+                                break
+                    if len(top_3_musics) >= 3:
+                        break
+
+            return MusicStatsResponse(
+                total_recommendations=len(user.recommendations),
+                stats=top_items,
+                top_musics=top_3_musics
+            )
     
     @staticmethod
     async def get_favorite_genre(user_id: UUID) -> str:

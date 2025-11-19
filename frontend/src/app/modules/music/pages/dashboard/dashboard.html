@@ -1,0 +1,348 @@
+<div class="flex h-screen bg-gray-900">
+  
+  <!-- sidebar -->
+  <div class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
+    <!-- header -->
+    <div class="p-6 border-b border-gray-700">
+      <h1 class="text-2xl font-bold text-white">Rhythmate</h1>
+      <p class="text-gray-400 text-sm">Music Discovery</p>
+    </div>
+
+    <!-- menu de navegação -->
+    <nav class="flex-1 p-4 space-y-2">
+      <!-- perfil -->
+      <a routerLink="/user/profile" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+        <span>Perfil</span>
+      </a>
+
+      <!-- recomendação -->
+      <a routerLink="/music/recommendation" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+        </svg>
+        <span>Recomendação</span>
+      </a>
+
+      <!-- histórico -->
+      <a routerLink="/music/history" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>Histórico</span>
+      </a>
+
+      <!-- dashboard (ativo) -->
+      <a routerLink="/music/dashboard" class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-600 to-red-600 text-white rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span>Dashboard</span>
+      </a>
+    </nav>
+
+    <!-- botão de logout -->
+    <div class="p-4 border-t border-gray-700">
+      <button (click)="logout()" class="flex items-center gap-3 px-4 py-3 w-full text-gray-300 hover:bg-red-900/30 hover:text-red-400 rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- conteúdo principal -->
+  <div class="flex-1 overflow-auto">
+
+    <!-- gradiente com glass effect -->
+    <div class="h-[20vh] bg-black relative overflow-hidden border-b border-gray-700">
+      <!-- Camada 1: diagonal superior esquerda pra inferior direita-->
+      <div class="absolute inset-0 bg-gradient-to-br from-purple-900/70 via-transparent to-transparent"></div>
+      
+      <!-- Camada 2: diagonal inferior esquerda pra superior direita -->
+      <div class="absolute inset-0 bg-gradient-to-tr from-red-900/60 via-transparent to-purple-800/40"></div>
+      
+      <!-- Camada 3: radial centro pra fora-->
+      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-purple-950/50 to-red-950/70"></div>
+      
+      <!-- glass effect-->
+      <div class="absolute inset-0 backdrop-blur-sm bg-black/20"></div>
+    </div>
+
+    <div class="p-8 max-w-7xl mx-auto">
+      
+      <!-- título e controles -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2">Dashboard de Estatísticas</h1>
+        <p class="text-gray-400 text-lg mb-6">Visualize suas músicas e artistas mais recomendados</p>
+
+        <!-- filtros e busca -->
+        <div class="flex flex-col md:flex-row gap-4 items-center">
+          <!-- filtro por tipo -->
+          <div class="flex gap-2 bg-gray-800 p-1 rounded-lg">
+            <button
+              (click)="filterBy = 'artist'; onFilterChange()"
+              [class.bg-gradient-to-r]="filterBy === 'artist'"
+              [class.from-purple-600]="filterBy === 'artist'"
+              [class.to-red-600]="filterBy === 'artist'"
+              [class.text-white]="filterBy === 'artist'"
+              [class.text-gray-400]="filterBy !== 'artist'"
+              class="px-6 py-2 rounded-lg font-semibold transition"
+            >
+              Por Artista
+            </button>
+            <button
+              (click)="filterBy = 'genre'; onFilterChange()"
+              [class.bg-gradient-to-r]="filterBy === 'genre'"
+              [class.from-purple-600]="filterBy === 'genre'"
+              [class.to-red-600]="filterBy === 'genre'"
+              [class.text-white]="filterBy === 'genre'"
+              [class.text-gray-400]="filterBy !== 'genre'"
+              class="px-6 py-2 rounded-lg font-semibold transition"
+            >
+              Por Gênero
+            </button>
+          </div>
+
+          <!-- campo de busca -->
+          <div class="flex-1 max-w-md">
+            <div class="relative">
+              <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="onSearchChange()"
+                placeholder="Buscar {{filterLabel.toLowerCase()}}..."
+                class="w-full px-4 py-2 pl-10 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- total de recomendações -->
+          <div class="bg-gradient-to-r from-purple-600 to-red-600 px-6 py-3 rounded-lg">
+            <p class="text-white text-sm font-medium">Total de Recomendações</p>
+            <p class="text-white text-2xl font-bold">{{ totalRecommendations }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- loading -->
+      <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+        <div class="animate-spin h-12 w-12 border-4 border-purple-600 border-t-transparent rounded-full"></div>
+      </div>
+
+      <!-- erro -->
+      <div *ngIf="errorMessage && !isLoading" class="bg-red-900/50 border border-red-700 text-red-300 px-6 py-4 rounded-lg text-center">
+        {{ errorMessage }}
+      </div>
+
+      <!-- gráfico de barras -->
+      <div *ngIf="!isLoading && !errorMessage && filteredStats.length > 0" class="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-8">
+        <div class="mb-6">
+          <h2 class="text-white text-2xl font-bold mb-2">Gráfico de Barras</h2>
+          <p class="text-gray-400">Top 10 {{ filterLabel }}s mais recomendados</p>
+        </div>
+        <div class="bg-gray-900 rounded-lg p-6 overflow-x-auto">
+          <canvas 
+            #chartCanvas 
+            [width]="Math.max(1000, filteredStats.length * 100)" 
+            height="600"
+            class="mx-auto"
+            style="max-width: 100%;"
+          ></canvas>
+        </div>
+      </div>
+
+      <!-- top 3 musicas -->
+      <div *ngIf="!isLoading && !errorMessage && topMusics.length > 0" class="mb-8">
+        <div class="mb-6">
+          <h2 class="text-white text-2xl font-bold mb-2">Top 3 Músicas Mais Recomendadas</h2>
+          <p class="text-gray-400">As músicas que você mais recomendou</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div 
+            *ngFor="let music of topMusics; let i = index"
+            class="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-purple-500 transition-all hover:scale-[1.02]"
+          >
+            <!-- posição e ações -->
+            <div class="flex items-center justify-between mb-4">
+              <div 
+                class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
+                [class.bg-gradient-to-br]="true"
+                [class.from-yellow-500]="i === 0"
+                [class.to-yellow-600]="i === 0"
+                [class.from-gray-400]="i === 1"
+                [class.to-gray-500]="i === 1"
+                [class.from-orange-600]="i === 2"
+                [class.to-orange-700]="i === 2"
+                [class.text-white]="true"
+              >
+                {{ i + 1 }}
+              </div>
+              
+              <div class="flex items-center gap-2">
+                <!-- contagem -->
+                <div class="bg-gradient-to-r from-purple-600 to-red-600 px-3 py-1 rounded-full">
+                  <p class="text-white text-sm font-bold">{{ music.count }}x</p>
+                </div>
+                
+                <!-- botão compartilhar -->
+                <button
+                  (click)="openShareModal(music)"
+                  class="p-2 text-gray-400 hover:text-purple-400 hover:bg-gray-700 rounded-lg transition"
+                  title="Compartilhar música"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- info musica -->
+            <div class="space-y-2">
+              <h3 class="text-white text-xl font-bold truncate" [title]="music.title">
+                {{ music.title }}
+              </h3>
+              
+              <div class="flex items-center gap-2 text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <p class="truncate" [title]="music.artist">{{ music.artist }}</p>
+              </div>
+              
+              <div class="flex items-center gap-2 text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/>
+                </svg>
+                <p class="truncate" [title]="music.album">{{ music.album }}</p>
+              </div>
+              
+              <div class="flex items-center gap-2 text-gray-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                </svg>
+                <p class="truncate" [title]="music.genre">{{ music.genre }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- sem resultados -->
+      <div *ngIf="!isLoading && !errorMessage && filteredStats.length === 0 && searchTerm" class="text-center py-20">
+        <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-gray-400 text-xl">Nenhum resultado encontrado para "{{ searchTerm }}"</p>
+      </div>
+
+      <!-- sem dados -->
+      <div *ngIf="!isLoading && !errorMessage && stats.length === 0" class="text-center py-20">
+        <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <p class="text-gray-400 text-xl mb-2">Nenhuma estatística disponível ainda</p>
+        <p class="text-gray-500">Faça algumas recomendações para ver suas estatísticas aqui!</p>
+        <a routerLink="/music/recommendation" class="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-purple-600 to-red-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-red-700 transition">
+          Ir para Recomendações
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- modal de compartilhamento -->
+<div 
+  *ngIf="sharingMusic" 
+  class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+  (click)="closeShareModal()"
+>
+  <div 
+    class="bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- header -->
+    <div class="flex items-center justify-between">
+      <h3 class="text-xl font-bold text-white flex items-center gap-2">
+        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+        </svg>
+        Compartilhar Música
+      </h3>
+      <button 
+        (click)="closeShareModal()"
+        class="text-gray-400 hover:text-white transition"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- musica -->
+    <div class="bg-gray-700 rounded-lg p-4">
+      <h4 class="text-white font-semibold">{{ sharingMusic.title }}</h4>
+      <p class="text-gray-400 text-sm">{{ sharingMusic.artist }}</p>
+      <div class="flex gap-3 mt-2">
+        <span class="text-purple-400 text-xs">{{ sharingMusic.genre }}</span>
+        <span class="text-gray-500 text-xs">{{ sharingMusic.album }}</span>
+      </div>
+    </div>
+
+    <!-- form email -->
+    <form (ngSubmit)="shareMusic()" class="space-y-4">
+      <div>
+        <label for="shareEmail" class="block text-sm font-medium text-gray-300 mb-2">
+          Email do destinatário
+        </label>
+        <input
+          id="shareEmail"
+          type="email"
+          [(ngModel)]="shareEmail"
+          name="shareEmail"
+          required
+          class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+          placeholder="exemplo@email.com"
+        />
+      </div>
+
+      <!-- mensagens -->
+      <div *ngIf="shareErrorMessage" class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-sm">
+        {{ shareErrorMessage }}
+      </div>
+
+      <div *ngIf="shareSuccessMessage" class="bg-green-900/50 border border-green-700 text-green-300 px-4 py-3 rounded-lg text-sm">
+        {{ shareSuccessMessage }}
+      </div>
+
+      <!-- botões -->
+      <div class="flex gap-3">
+        <button
+          type="button"
+          (click)="closeShareModal()"
+          class="flex-1 px-4 py-3 bg-gray-700 text-white font-semibold rounded-lg hover:bg-gray-600 transition"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSharing"
+          class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-red-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span *ngIf="!isSharing">Compartilhar</span>
+          <span *ngIf="isSharing">Compartilhando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

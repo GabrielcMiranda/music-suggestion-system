@@ -5,8 +5,8 @@ from app.models import Base
 import logging
 
 async def create_database():
+    """Cria as tabelas apenas se elas não existirem"""
     async with engine.begin() as connection:
-        await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)
 
 

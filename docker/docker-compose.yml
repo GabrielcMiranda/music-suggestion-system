@@ -1,14 +1,74 @@
-version: '3.1'
+name: music-system
 
 services:
-    postgresql:
-        image: postgres
-        restart: always
-        ports:
-            - 5432:5432
-        environment:
-            POSTGRES_PASSWORD: ${PG_PASS}
-            POSTGRES_USER: ${PG_USER}
-            POSTGRES_DB: ${PG_DB}
-        volumes:
-            - /var/cache/pgdata:/var/lib/postgresql/data
+  db:
+    image: postgres:15-alpine
+    container_name: music-db
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASS}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_DB: ${PG_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - music-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d song_recommendation_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: music-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - PG_URL=postgresql+asyncpg://${PG_USER}:${PG_PASS}@db:5432/${PG_DB}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - CLOUDINARY_URL=${CLOUDINARY_URL}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - FRONTEND_URL=${FRONTEND_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - music-network
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: music-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - music-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  music-network:
+    driver: bridge

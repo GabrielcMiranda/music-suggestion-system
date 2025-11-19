@@ -27,6 +27,13 @@ export class History implements OnInit {
   errorMessage = '';
   expandedRecommendations: Set<number> = new Set();
   
+  // Paginação
+  currentPage = 1;
+  pageSize = 10;
+  totalRecommendations = 0;
+  hasMore = false;
+  isLoadingMore = false;
+  
   sharingMusic: MusicRecommendation | null = null;
   shareEmail = '';
   isSharing = false;
@@ -47,24 +54,43 @@ export class History implements OnInit {
   loadHistory(): void {
     this.isLoading = true;
     this.errorMessage = '';
+    this.currentPage = 1;
+    this.historyData = [];
 
-    this.musicService.getMusicHistory().subscribe({
+    this.fetchHistory();
+  }
+  
+  fetchHistory(): void {
+    this.musicService.getMusicHistory(this.currentPage, this.pageSize).subscribe({
       next: (response: any) => {
-        const userMusics = response.user_musics || response;
+        const userMusics = response.user_musics || [];
         
-        this.historyData = userMusics.map((item: any) => ({
+        const newData = userMusics.map((item: any) => ({
           recommendationId: item.recommendation_id,
           songInput: item.song_input,
           songs: item.musics
         }));
         
+        this.historyData = [...this.historyData, ...newData];
+        this.totalRecommendations = response.total;
+        this.hasMore = response.has_more;
         this.isLoading = false;
+        this.isLoadingMore = false;
       },
       error: (error) => {
         this.errorMessage = error.error?.detail || 'Erro ao carregar histórico';
         this.isLoading = false;
+        this.isLoadingMore = false;
       }
     });
+  }
+  
+  loadMore(): void {
+    if (this.isLoadingMore || !this.hasMore) return;
+    
+    this.isLoadingMore = true;
+    this.currentPage++;
+    this.fetchHistory();
   }
 
   toggleRecommendation(id: number): void {

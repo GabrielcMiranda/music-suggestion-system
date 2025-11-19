@@ -184,6 +184,30 @@
           </div>
 
         </div>
+        
+        <!-- botão carregar mais -->
+        <div *ngIf="historyData.length > 0" class="flex flex-col items-center gap-4 mt-8">
+          <div class="text-gray-400 text-sm">
+            Mostrando {{ historyData.length }} de {{ totalRecommendations }} recomendações
+          </div>
+          
+          <button
+            *ngIf="hasMore"
+            (click)="loadMore()"
+            [disabled]="isLoadingMore"
+            class="px-8 py-3 bg-gradient-to-r from-purple-600 to-red-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <span *ngIf="!isLoadingMore">Carregar mais</span>
+            <span *ngIf="isLoadingMore" class="flex items-center gap-2">
+              <div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+              Carregando...
+            </span>
+          </button>
+          
+          <div *ngIf="!hasMore && historyData.length < totalRecommendations" class="text-gray-500 text-sm">
+            Todas as recomendações foram carregadas
+          </div>
+        </div>
       </div>
 
     </div>

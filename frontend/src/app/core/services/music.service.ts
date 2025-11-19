@@ -13,11 +13,17 @@ export class MusicService {
   ) { }
 
   generateRecommendation(musicInput: string) {
-    return this.api.post<{ recommendations: MusicRecommendation[] }>('my-musics/recommend', { music_input: musicInput    });
+    return this.api.post<{ recommendations: MusicRecommendation[] }>('my-musics/recommend', { music_input: musicInput });
   }
 
-  getMusicHistory(){
-    return this.api.get<recommendationHistory[]>('my-musics');
+  getMusicHistory(page: number = 1, pageSize: number = 10){
+    return this.api.get<{ 
+      user_musics: recommendationHistory[], 
+      total: number, 
+      page: number, 
+      page_size: number, 
+      has_more: boolean 
+    }>(`my-musics?page=${page}&page_size=${pageSize}`);
   }
 
   getMusicStats(filter_by: string){

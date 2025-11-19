@@ -22,13 +22,15 @@ async def recommend_music(dto:RecommendationRequest , user_id: UUID = Depends(Au
 
 @user_music_router.get('/', response_model=UserMusicHistoryResponse)
 async def get_my_musics(
+    page: int = Query(1, ge=1, description="Número da página (começa em 1)"),
+    page_size: int = Query(10, ge=1, le=50, description="Quantidade de recomendações por página"),
     current_user_id: UUID = Depends(AuthService.validate_user_auth)
 ):
     """
-    Retorna todas as músicas recomendadas para o usuário logado,
-    agrupadas por recomendação
+    Retorna as músicas recomendadas para o usuário logado,
+    agrupadas por recomendação, com paginação
     """
-    return await UserMusicService.get_user_musics(current_user_id)
+    return await UserMusicService.get_user_musics(current_user_id, page, page_size)
 
 @user_music_router.get('/all', response_model=List[UserMusic])
 async def get_all_my_musics(

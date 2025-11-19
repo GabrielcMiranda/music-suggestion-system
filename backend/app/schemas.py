@@ -46,6 +46,10 @@ class UserMusicHistory(BaseModel):
 
 class UserMusicHistoryResponse(BaseModel):
     user_musics: List[UserMusicHistory]
+    total: int
+    page: int
+    page_size: int
+    has_more: bool
 
 class RecommendationRequest(BaseModel):
     music_input: str

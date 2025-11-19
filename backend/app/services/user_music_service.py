@@ -45,24 +45,34 @@ class UserMusicService:
             return musics
 
     @staticmethod
-    async def get_user_musics(user_id: UUID) -> UserMusicHistoryResponse:
-        # retorna todas as músicas recomendadas para o usuário
+    async def get_user_musics(user_id: UUID, page: int = 1, page_size: int = 10) -> UserMusicHistoryResponse:
+        # retorna as músicas recomendadas para o usuário com paginação
         async with async_session() as session:
-            # Buscar todas as recomendações do usuário
+            # Contar total de recomendações
+            count_query = (
+                select(Recommendation)
+                .where(Recommendation.user_id == user_id)
+            )
+            count_result = await session.execute(count_query)
+            total_recommendations = len(count_result.scalars().all())
+            
+            if total_recommendations == 0:
+                raise HTTPException(status_code=404, detail="No recommendations found for this user.")
+            
+            # Buscar recomendações com paginação
+            offset = (page - 1) * page_size
             query = (
                 select(Recommendation)
                 .where(Recommendation.user_id == user_id)
                 .order_by(desc(Recommendation.id))
+                .limit(page_size)
+                .offset(offset)
             )
             
             result = await session.execute(query)
             recommendations = result.scalars().all()
-
-            if not recommendations:
-                raise HTTPException(status_code=404, detail="No recommendations found for this user.")
             
             user_musics = []
-            total_musics = 0
             
             for recommendation in recommendations:
                 musicas_data = recommendation.musicas if isinstance(recommendation.musicas, list) else []
@@ -88,7 +98,11 @@ class UserMusicService:
                     user_musics.append(user_music_history)
             
             return UserMusicHistoryResponse(
-                user_musics=user_musics
+                user_musics=user_musics,
+                total=total_recommendations,
+                page=page,
+                page_size=page_size,
+                has_more=(offset + len(recommendations)) < total_recommendations
             )
     
     @staticmethod

@@ -125,7 +125,7 @@ class ShareService:
     
     # UseCase para compartilhar perfil por email  
     @staticmethod
-    async def share_profile_by_email(dto: ShareProfileRequest, sender_username: str, sender_favorite_genre: str) -> StandartOutput:
+    async def share_profile_by_email(dto: ShareProfileRequest, sender_username: str, sender_favorite_genre: str, sender_profile_picture: str = None) -> StandartOutput:
         
         try:
             smtp_server = Settings.SMTP_SERVER  
@@ -163,9 +163,7 @@ class ShareService:
                         
                         <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                             <div style="text-align: center; margin-bottom: 20px;">
-                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
-                                    {sender_username[0].upper()}
-                                </div>
+                                {f'<img src="{sender_profile_picture}" alt="{sender_username}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ff6b6b; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />' if sender_profile_picture else f'<div style="width: 100px; height: 100px; background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: bold;">{sender_username[0].upper()}</div>'}
                             </div>
                             
                             <h2 style="color: #333; text-align: center; margin: 15px 0;">@{sender_username}</h2>
@@ -178,7 +176,7 @@ class ShareService:
                         </div>
                         
                         <div style="text-align: center; margin: 30px 0;">
-                            <a href="{Settings.FRONTEND_URL or 'http://localhost:3000'}/login" 
+                            <a href="{Settings.FRONTEND_URL or 'http://localhost:4200'}/login" 
                                style="background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%); 
                                       color: white; 
                                       padding: 12px 30px; 

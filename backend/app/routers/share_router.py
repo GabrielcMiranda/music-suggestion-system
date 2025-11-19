@@ -47,5 +47,6 @@ async def share_profile_email(
     return await ShareService.share_profile_by_email(
         dto=share_request,
         sender_username=sender_user.username,
-        sender_favorite_genre=sender_user.favorite_music_genre or "Não definido"
+        sender_favorite_genre=sender_user.favorite_music_genre or "Não definido",
+        sender_profile_picture=sender_user.profile_picture
     )   

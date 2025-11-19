@@ -33,6 +33,14 @@ class UserService:
                 music_genre = await UserMusicService.get_favorite_genre(user_id)
                 if not music_genre:
                     music_genre = 'You gotta generate at least one recommendation to verify your favorite music genre'
+                else:
+                    await session.execute(
+                        update(User)
+                        .where(User.id == user_id)
+                        .values(favorite_music_genre=music_genre)
+                    )
+                    await session.commit()
+                    await session.refresh(user)
 
                 return ProfileResponse(username=user.username, email=user.email, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
             
@@ -42,6 +50,14 @@ class UserService:
                 music_genre = await UserMusicService.get_favorite_genre(user.id)
                 if not music_genre:
                     music_genre = 'This user has not generated any recommendations yet'
+                else:
+                    await session.execute(
+                        update(User)
+                        .where(User.id == user.id)
+                        .values(favorite_music_genre=music_genre)
+                    )
+                    await session.commit()
+                    await session.refresh(user)
                 
                 return OtherProfileResponse(username=user.username, favorite_music_genre=music_genre, profile_picture=user.profile_picture)
 

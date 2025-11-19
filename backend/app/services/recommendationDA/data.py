@@ -63,12 +63,13 @@ def treinar_modelo(df, features_cols, n_clusters=10, nome_col='name', artista_co
 
 
 def recomendar_musicas(nome_musica, n_recomendacoes=10):
-    df = pd.read_csv('app/services/recommendationDA/dataset.csv')
-    treinar_modelo(df=df, features_cols=df.iloc[:, 5:14].columns.tolist(), nome_col='track_name', artista_col='artists')
     global df_musicas, kmeans_model, scaler, scaled_features
     
     if df_musicas is None or kmeans_model is None:
-        raise ValueError("Modelo não treinado. Execute treinar_modelo() primeiro.")
+        print("Carregando dataset e modelo pela primeira vez...")
+        df = pd.read_csv('app/services/recommendationDA/dataset.csv')
+        treinar_modelo(df=df, features_cols=df.iloc[:, 5:14].columns.tolist(), nome_col='track_name', artista_col='artists')
+        print("Dataset e modelo carregados com sucesso!")
     
     if '-' in nome_musica:
         musica = nome_musica.split('-')[0].strip()

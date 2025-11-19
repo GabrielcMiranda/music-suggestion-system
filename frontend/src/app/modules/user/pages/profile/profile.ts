@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { UserService, ProfileData, OtherProfileData } from '../../../../core/services/user.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ShareService } from '../../../../core/services/share.service';
 
 @Component({
   selector: 'app-profile',
@@ -35,10 +36,18 @@ export class Profile implements OnInit {
   isUploadingPicture = false;
   uploadErrorMessage = '';
   
+  isSharingProfile = false;
+  shareProfileEmail = '';
+  shareProfileMessage = '';
+  shareProfileErrorMessage = '';
+  shareProfileSuccessMessage = '';
+  showShareProfileModal = false;
+  
   constructor(
     private router: Router,
     private authService: AuthService,
     private userService: UserService,
+    private shareService: ShareService
   ) {}
   
   ngOnInit(): void {
@@ -223,6 +232,59 @@ export class Profile implements OnInit {
       error: (error) => {
         this.uploadErrorMessage = error.error?.detail || 'Erro ao atualizar foto de perfil';
         this.isUploadingPicture = false;
+      }
+    });
+  }
+  
+  openShareProfileModal(): void {
+    this.showShareProfileModal = true;
+    this.shareProfileEmail = '';
+    this.shareProfileMessage = '';
+    this.shareProfileErrorMessage = '';
+    this.shareProfileSuccessMessage = '';
+  }
+  
+  closeShareProfileModal(): void {
+    this.showShareProfileModal = false;
+    this.shareProfileEmail = '';
+    this.shareProfileMessage = '';
+    this.shareProfileErrorMessage = '';
+    this.shareProfileSuccessMessage = '';
+  }
+  
+  shareProfile(): void {
+    if (!this.shareProfileEmail.trim()) {
+      this.shareProfileErrorMessage = 'Por favor, insira um email';
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.shareProfileEmail)) {
+      this.shareProfileErrorMessage = 'Por favor, insira um email válido';
+      return;
+    }
+    
+    this.isSharingProfile = true;
+    this.shareProfileErrorMessage = '';
+    this.shareProfileSuccessMessage = '';
+    
+    const shareRequest = {
+      recipient_email: this.shareProfileEmail,
+      message: this.shareProfileMessage || undefined
+    };
+    
+    this.shareService.shareProfile(shareRequest).subscribe({
+      next: () => {
+        this.shareProfileSuccessMessage = 'Perfil compartilhado com sucesso!';
+        this.isSharingProfile = false;
+        
+        setTimeout(() => {
+          this.closeShareProfileModal();
+        }, 2000);
+      },
+      error: (error) => {
+        this.shareProfileErrorMessage = error.error?.detail || 'Erro ao compartilhar perfil';
+        this.isSharingProfile = false;
       }
     });
   }

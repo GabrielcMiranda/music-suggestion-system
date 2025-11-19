@@ -12,8 +12,11 @@ export class ShareService {
     private api: ApiService
   ){ }
   
-  shareSong(share_request: MusicRecommendation, recipientEmail: string) {
-    
+  shareSong(share_request: MusicRecommendation, recipientEmail: string) { 
     return this.api.post<{status_code: number, detail: string}>(`share/song?recipient_email=${recipientEmail}`, share_request);
+  }
+
+  shareProfile(shareProfileRequest: {recipient_email: string, message?: string}) {
+    return this.api.post<{status_code: number, detail: string}>('share/profile', { recipient_email: shareProfileRequest.recipient_email, message: shareProfileRequest.message });
   }
 }

@@ -1,4 +1,4 @@
-Write-Host "🚀 Iniciando Music Suggestion System..." -ForegroundColor Cyan
+Write-Host "🚀 Iniciando Rhythmate..." -ForegroundColor Cyan
 
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptPath

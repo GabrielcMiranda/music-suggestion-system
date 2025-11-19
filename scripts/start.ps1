@@ -1,4 +1,4 @@
-Write-Host "🎵 Music Suggestion System - Docker Setup 🎵" -ForegroundColor Cyan
+Write-Host "🎵 Rhythmate - Docker Setup 🎵" -ForegroundColor Cyan
 Write-Host ""
 
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path

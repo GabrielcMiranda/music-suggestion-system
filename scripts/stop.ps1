@@ -1,4 +1,4 @@
-Write-Host "🛑 Parando Music Suggestion System..." -ForegroundColor Yellow
+Write-Host "🛑 Parando Rhythmate..." -ForegroundColor Yellow
 
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptPath

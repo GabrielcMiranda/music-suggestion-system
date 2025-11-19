@@ -8,6 +8,7 @@ warnings.filterwarnings('ignore')
 import joblib
 import json
 import os
+import random
 
 df_musicas = None
 kmeans_model = None
@@ -112,7 +113,14 @@ def recomendar_musicas(nome_musica, n_recomendacoes=10):
 
     cluster_songs = cluster_songs[cluster_songs['distance'] > 0]
     
-    recommendations = cluster_songs.nsmallest(n_recomendacoes, 'distance')
+    top_candidates = min(n_recomendacoes * 3, len(cluster_songs))
+    candidate_songs = cluster_songs.nsmallest(top_candidates, 'distance')
+    
+    if len(candidate_songs) > n_recomendacoes:
+        recommendations = candidate_songs.sample(n=n_recomendacoes, random_state=random.randint(0, 10000))
+    else:
+        recommendations = candidate_songs
+    
     music_list = []
     for _, row in recommendations.iterrows():
         music_list.append({

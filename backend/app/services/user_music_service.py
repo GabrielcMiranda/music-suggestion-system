@@ -209,8 +209,15 @@ class UserMusicService:
             top_3_musics = []
             
             for music_key, count in top_3_music_keys:
+                if len(top_3_musics) >= 3:
+                    break
+                    
                 title, artist = music_key.split('||')
+                found = False
+                
                 for rec in user.recommendations:
+                    if found:
+                        break
                     if rec.musicas:
                         for musica in rec.musicas:
                             if musica.get('title') == title and musica.get('artist') == artist:
@@ -221,9 +228,8 @@ class UserMusicService:
                                     'album': musica.get('album'),
                                     'count': count
                                 })
+                                found = True
                                 break
-                    if len(top_3_musics) >= 3:
-                        break
 
             return MusicStatsResponse(
                 total_recommendations=len(user.recommendations),

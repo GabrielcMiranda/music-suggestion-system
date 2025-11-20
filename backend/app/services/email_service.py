@@ -73,7 +73,7 @@ class EmailService:
             logging.error(error_msg)
             raise HTTPException(
                 status_code=500,
-                detail=f"Erro ao enviar email: {str(e)}"
+                detail=f"Erro ao enviar email. Tente novamente mais tarde."
             )
     
     @staticmethod
@@ -166,5 +166,5 @@ class EmailService:
             logging.error(error_msg)
             raise HTTPException(
                 status_code=500,
-                detail=f"Erro ao enviar email: {str(e)}"
+                detail=f"Erro ao enviar email. Tente novamente mais tarde."
             )

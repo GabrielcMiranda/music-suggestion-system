@@ -7,6 +7,8 @@ from app.core.settings import Settings
 from app.schemas import ShareProfileRequest, StandartOutput, UserMusic
 from fastapi import HTTPException
 import logging
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 class ShareService:
     
@@ -71,16 +73,21 @@ class ShareService:
             
             msg.attach(MIMEText(html_body, 'html'))
             
-            # enviar email com mais detalhes de debug
-            print(f"Tentando conectar ao servidor SMTP: {smtp_server}:{smtp_port}")
-            with smtplib.SMTP(smtp_server, smtp_port) as server:
-                print("Conexão estabelecida")
-                server.starttls()
-                print("TLS iniciado")
-                server.login(email_user, email_password)
-                print("Login realizado com sucesso")
-                server.send_message(msg)
-                print("Email enviado com sucesso")
+            # Função bloqueante que será executada em thread separada
+            def send_email():
+                print(f"Tentando conectar ao servidor SMTP: {smtp_server}:{smtp_port}")
+                with smtplib.SMTP(smtp_server, smtp_port, timeout=30) as server:
+                    print("Conexão estabelecida")
+                    server.starttls()
+                    print("TLS iniciado")
+                    server.login(email_user, email_password)
+                    print("Login realizado com sucesso")
+                    server.send_message(msg)
+                    print("Email enviado com sucesso")
+            
+            # Executar em thread separada para não bloquear
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, send_email)
             
             logging.info(f"Música '{dto.title}' compartilhada por email de {sender_username} para {recipient_email}")
             
@@ -204,15 +211,19 @@ class ShareService:
             
             msg.attach(MIMEText(html_body, 'html'))
             
-            print(f"Tentando conectar ao servidor SMTP: {smtp_server}:{smtp_port}")
-            with smtplib.SMTP(smtp_server, smtp_port) as server:
-                print("Conexão estabelecida")
-                server.starttls()
-                print("TLS iniciado")
-                server.login(email_user, email_password)
-                print("Login realizado com sucesso")
-                server.send_message(msg)
-                print("Email de perfil enviado com sucesso")
+            def send_email():
+                print(f"Tentando conectar ao servidor SMTP: {smtp_server}:{smtp_port}")
+                with smtplib.SMTP(smtp_server, smtp_port, timeout=30) as server:
+                    print("Conexão estabelecida")
+                    server.starttls()
+                    print("TLS iniciado")
+                    server.login(email_user, email_password)
+                    print("Login realizado com sucesso")
+                    server.send_message(msg)
+                    print("Email de perfil enviado com sucesso")
+            
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, send_email)
             
             logging.info(f"Perfil de '{sender_username}' compartilhado por email para {dto.recipient_email}")
             

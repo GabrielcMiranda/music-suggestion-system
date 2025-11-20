@@ -120,6 +120,8 @@ class EmailService:
                             <p style="margin: 5px 0; color: #666;"><strong>Gênero Favorito:</strong> {sender_favorite_genre}</p>
                         </div>
                         
+                        {f'<div style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin: 15px 0;"><p style="color: #444; font-style: italic; margin: 0;">💬 "{dto.message}"</p></div>' if dto.message else ''}
+                        
                         <div style="text-align: center; margin: 30px 0;">
                             <a href="{Settings.FRONTEND_URL}" 
                                style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 

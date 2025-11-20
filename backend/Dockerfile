@@ -22,12 +22,8 @@ COPY . .
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Expose port
+# Expose port (Render usa porta dinâmica via $PORT)
 EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
 
 # Run the application
 ENTRYPOINT ["/entrypoint.sh"]

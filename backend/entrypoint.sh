@@ -8,4 +8,6 @@ echo "Inicializando banco de dados..."
 python -m app.core.database.init_db
 
 echo "Iniciando aplicação..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000
+# Usa PORT do ambiente (Render) ou 8000 como padrão (Docker local)
+PORT=${PORT:-8000}
+exec gunicorn app.main:app --bind 0.0.0.0:$PORT --worker-class uvicorn.workers.UvicornWorker --workers 1

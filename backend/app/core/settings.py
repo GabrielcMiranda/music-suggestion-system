@@ -14,6 +14,10 @@ class Settings:
     SMTP_PORT = getenv('SMTP_PORT')
     EMAIL_USER = getenv('EMAIL_USER')
     EMAIL_PASSWORD = getenv('EMAIL_PASSWORD')
+    
+    RESEND_API_KEY = getenv('RESEND_API_KEY')
+    EMAIL_FROM = getenv('EMAIL_FROM', 'Rhythmate <noreply@rhythmate.app>')
+    
     FRONTEND_URL = getenv('FRONTEND_URL')
 
     CLOUDINARY_CLOUD_NAME = getenv('CLOUDINARY_CLOUD_NAME')

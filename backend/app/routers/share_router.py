@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.schemas import ShareProfileRequest, StandartOutput, UserMusic 
 from app.services.auth_service import AuthService
-from app.services.share_service import ShareService
+from app.services.email_service import EmailService
 from app.core.database.connection import async_session
 from app.models import User
 from sqlalchemy.future import select
@@ -23,8 +23,7 @@ async def share_music_email(
         if not sender_user:
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
     
-    # serviço para enviar o email
-    return await ShareService.share_music_by_email(
+    return await EmailService.send_music_share(
         dto=share_request,
         sender_username=sender_user.username,  # nome do usuário logado
         recipient_email=recipient_email
@@ -43,8 +42,7 @@ async def share_profile_email(
         if not sender_user:
             raise HTTPException(status_code=404, dsetail="Usuário não encontrado")
     
-    # serviço para enviar o email do perfil
-    return await ShareService.share_profile_by_email(
+    return await EmailService.send_profile_share(
         dto=share_request,
         sender_username=sender_user.username,
         sender_favorite_genre=sender_user.favorite_music_genre or "Não definido",
